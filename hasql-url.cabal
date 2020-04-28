@@ -8,12 +8,14 @@ cabal-version: 1.12
 
 name:           hasql-url
 version:        0.1.0.0
+synopsis:       PostgreSQL Schema URL parsing for Hasql
 description:    Please see the README on GitHub at <https://github.com/theobat/hasql-url#readme>
 homepage:       https://github.com/theobat/hasql-url#readme
 bug-reports:    https://github.com/theobat/hasql-url/issues
 author:         Théophile Batoz
 maintainer:     example@example.com
 copyright:      2020 Théophile Batoz
+category:       Database
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
