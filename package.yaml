@@ -1,0 +1,52 @@
+name:                hasql-url
+version:             0.1.0.0
+github:              "theobat/hasql-url"
+license:             BSD3
+author:              "Théophile Batoz"
+maintainer:          "example@example.com"
+copyright:           "2020 Théophile Batoz"
+
+extra-source-files:
+- Readme.rst
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/theobat/hasql-url#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- hasql
+- network-uri
+- split
+- bytestring
+
+library:
+  source-dirs: src
+
+tests:
+  # hasql-url-test:
+  #   main:                Spec.hs
+  #   source-dirs:         test
+  #   ghc-options:
+  #   - -threaded
+  #   - -rtsopts
+  #   - -with-rtsopts=-N
+  #   dependencies:
+  #   - hasql-url
+  hasql-url-doctest:
+    main: doctest/Main.hs
+    source-dirs: .
+    dependencies:
+      - hasql-url
+      - doctest
+      - QuickCheck
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
