@@ -13,7 +13,7 @@ description:    Please see the README on GitHub at <https://github.com/theobat/h
 homepage:       https://github.com/theobat/hasql-url#readme
 bug-reports:    https://github.com/theobat/hasql-url/issues
 author:         Théophile Batoz
-maintainer:     example@example.com
+maintainer:     theophile.batoz@kanso.ink
 copyright:      2020 Théophile Batoz
 category:       Database
 license:        BSD3
