@@ -31,6 +31,9 @@ import Prelude
 -- >>> parseDatabaseUrl "postgresql://foo:bar@example.com:2345/database"
 -- Just "host=example.com port=2345 user=foo password=bar dbname=database"
 --
+-- >>> parseDatabaseUrl "postgres://my_user:p@localhost:5432/my_test_db"
+-- Just "host=localhost port=5432 user=my_user password=p dbname=my_test_db"
+--
 parseDatabaseUrl :: String -> Maybe Settings
 parseDatabaseUrl databaseUrl = parseURI databaseUrl >>= uriToConnectInfo
 
