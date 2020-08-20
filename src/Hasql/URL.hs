@@ -7,20 +7,22 @@
 module Hasql.URL
   ( parseDatabaseUrl,
     uriToConnectInfo,
+    connectionFromURL,
+    InitDBConnectionError (..),
   )
 where
 
 import Control.Applicative
+import Data.Bifunctor (Bifunctor (first))
 import Data.ByteString (ByteString)
 import Data.List.Split (splitOn, splitOneOf)
 import Data.String (IsString (fromString))
 import Data.Word (Word16)
 import Debug.Trace (traceShowId)
 import Hasql.Connection (Settings, settings)
+import Hasql.Connection as Connection
 import Network.URI (URI (uriAuthority, uriPath, uriScheme), URIAuth (URIAuth, uriPort, uriRegName, uriUserInfo), parseURI)
 import Prelude
-import Hasql.Connection as Connection
-import Data.Bifunctor (Bifunctor(first))
 
 -- | Parse string url into `Settings`.
 -- A password is required (because 'settings' in "Hasql.Connection" does).
@@ -74,20 +76,23 @@ parseUriPath :: String -> Maybe ByteString
 parseUriPath uriPathValue = case splitOn "/" uriPathValue of
   [_, prefixRemoved] -> Just $ fromString prefixRemoved
   _ -> Nothing
+
 -- [?param1=value1&...] <=> 'uriPath'
 -- Not supported in Hasql ?
 -- parseUriQuery :: String -> (String, String, String, Word16)
 -- parseUriQuery = undefined
 
-
 ------ These are utility functions to ease the connection process
 
+-- The unique error for malformed URLs.
 data URLError = Malformed deriving (Eq, Show)
+
 data InitDBConnectionError
   = ConnectionURLError URLError
   | HasqlConnectionError ConnectionError
   deriving (Eq, Show)
 
+-- Create a "Hasql.Connection" from a string based URL.
 connectionFromURL :: String -> IO (Either InitDBConnectionError Connection)
 connectionFromURL url = safeSettingsToConnection $ first ConnectionURLError $ settingsFromURL url
 
