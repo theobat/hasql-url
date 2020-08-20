@@ -19,6 +19,8 @@ import Debug.Trace (traceShowId)
 import Hasql.Connection (Settings, settings)
 import Network.URI (URI (uriAuthority, uriPath, uriScheme), URIAuth (URIAuth, uriPort, uriRegName, uriUserInfo), parseURI)
 import Prelude
+import Hasql.Connection as Connection
+import Data.Bifunctor (Bifunctor(first))
 
 -- | Parse string url into `Settings`.
 -- A password is required (because 'settings' in "Hasql.Connection" does).
@@ -27,13 +29,10 @@ import Prelude
 --
 -- >>> parseDatabaseUrl "postgres://foo:bar@example.com:2345/database"
 -- Just "host=example.com port=2345 user=foo password=bar dbname=database"
---
 -- >>> parseDatabaseUrl "postgresql://foo:bar@example.com:2345/database"
 -- Just "host=example.com port=2345 user=foo password=bar dbname=database"
---
 -- >>> parseDatabaseUrl "postgres://my_user:p@localhost:5432/my_test_db"
 -- Just "host=localhost port=5432 user=my_user password=p dbname=my_test_db"
---
 parseDatabaseUrl :: String -> Maybe Settings
 parseDatabaseUrl databaseUrl = parseURI databaseUrl >>= uriToConnectInfo
 
@@ -79,3 +78,25 @@ parseUriPath uriPathValue = case splitOn "/" uriPathValue of
 -- Not supported in Hasql ?
 -- parseUriQuery :: String -> (String, String, String, Word16)
 -- parseUriQuery = undefined
+
+
+------ These are utility functions to ease the connection process
+
+data URLError = Malformed deriving (Eq, Show)
+data InitDBConnectionError
+  = ConnectionURLError URLError
+  | HasqlConnectionError ConnectionError
+  deriving (Eq, Show)
+
+connectionFromURL :: String -> IO (Either InitDBConnectionError Connection)
+connectionFromURL url = safeSettingsToConnection $ first ConnectionURLError $ settingsFromURL url
+
+settingsFromURL :: String -> Either URLError Settings
+settingsFromURL inputURL = case parseDatabaseUrl inputURL of
+  Nothing -> Left Malformed
+  Just set -> Right set
+
+safeSettingsToConnection :: Either InitDBConnectionError Settings -> IO (Either InitDBConnectionError Connection)
+safeSettingsToConnection maybeSettings = case maybeSettings of
+  Left err -> pure $ Left err
+  Right realSettings -> first HasqlConnectionError <$> Connection.acquire realSettings
